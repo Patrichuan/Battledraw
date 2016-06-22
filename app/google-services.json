@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "377463796520",
+    "firebase_url": "https://project-3307615140285248453.firebaseio.com",
+    "project_id": "project-3307615140285248453",
+    "storage_bucket": "project-3307615140285248453.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:377463796520:android:d5e8df4ecf7ea2f5",
+        "android_client_info": {
+          "package_name": "patrichuan.battledraw"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "377463796520-heu7cf2en2pr8853p0k6j05npg7cl62u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "patrichuan.battledraw",
+            "certificate_hash": "5743B2B70AC43B5B962CEEBDE048B756B61B38C1"
+          }
+        },
+        {
+          "client_id": "377463796520-oob0fmr584lvtf47nptllgqphghnai0f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjvrhL3cdtC2DZFm1WgwquzoP5Pre7W8E"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "377463796520-oob0fmr584lvtf47nptllgqphghnai0f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
