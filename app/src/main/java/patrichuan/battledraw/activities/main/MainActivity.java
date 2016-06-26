@@ -20,7 +20,9 @@ import patrichuan.battledraw.Constants;
 import patrichuan.battledraw.Player;
 import patrichuan.battledraw.R;
 import patrichuan.battledraw.Room;
+import patrichuan.battledraw.activities.drawavatar.DrawAvatarActivity;
 import patrichuan.battledraw.activities.splash.SplashActivity;
+import patrichuan.battledraw.activities.waitingplayers.WaitingPlayersActivity;
 
 /**
  * Created by Pat on 13/06/2016.
@@ -79,6 +81,9 @@ public class MainActivity extends BaseActivity {
                             if (dataSnapshot.exists()) {
                                 roomNameWrapper.setErrorEnabled(false);
                                 doJoinRoom();
+                                Intent intent = new Intent(MainActivity.this, DrawAvatarActivity.class);
+                                intent.putExtra("ROOM_NAME", roomName);
+                                startActivity(intent);
                             } else {
                                 roomNameWrapper.setError("Sorry but room '" + roomName + "' doesnt exist !");
                             }
@@ -110,6 +115,9 @@ public class MainActivity extends BaseActivity {
                             if (!dataSnapshot.exists()) {
                                 roomNameWrapper.setErrorEnabled(false);
                                 doCreateRoom();
+                                Intent intent = new Intent(MainActivity.this, WaitingPlayersActivity.class);
+                                intent.putExtra("ROOM_NAME", roomName);
+                                startActivity(intent);
                             } else {
                                 roomNameWrapper.setError("Sorry but room '" + roomName + "' already exists !");
                             }

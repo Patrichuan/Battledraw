@@ -34,5 +34,19 @@
             android:theme="@style/AppTheme">
         </activity>
 
+        <activity
+            android:name=".activities.waitingplayers.WaitingPlayersActivity"
+            android:label="Main"
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme">
+        </activity>
+
+        <activity
+            android:name=".activities.drawavatar.DrawAvatarActivity"
+            android:label="Main"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme">
+        </activity>
+
     </application>
 </manifest>
