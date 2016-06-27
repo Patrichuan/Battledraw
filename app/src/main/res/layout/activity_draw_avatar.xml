@@ -3,24 +3,34 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:padding="@dimen/_2sdp"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <TextView
-        android:layout_marginTop="@dimen/_5sdp"
-        android:layout_marginBottom="@dimen/_5sdp"
         android:id="@+id/message"
+        android:padding="@dimen/_10sdp"
         android:textSize="@dimen/_10sdp"
-        android:textColor="@color/colorAccent"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/colorWhite"
         android:text="DRAW TIME !"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <RelativeLayout
-        android:layout_below="@+id/message"
-        android:background="@drawable/custom_background"
+    <Button
+        android:layout_alignParentBottom="true"
+        android:id="@+id/btnCreateRoom"
+        android:text="I´M DONE !"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/_12sdp"
+        android:minHeight="40dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </RelativeLayout>
+        android:layout_height="wrap_content" />
+
+    <me.panavtec.drawableview.DrawableView
+        android:id="@+id/drawLayout"
+        android:layout_below="@+id/message"
+        android:layout_above="@+id/btnCreateRoom"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </RelativeLayout>

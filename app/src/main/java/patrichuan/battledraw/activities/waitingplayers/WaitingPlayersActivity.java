@@ -1,7 +1,6 @@
 package patrichuan.battledraw.activities.waitingplayers;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -81,6 +80,7 @@ public class WaitingPlayersActivity extends BaseActivity {
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
                 Map<String, String> players = (Map<String, String>) dataSnapshot.getValue();
+                // FIXME Implementar "Leave Room" option
             }
 
             @Override
