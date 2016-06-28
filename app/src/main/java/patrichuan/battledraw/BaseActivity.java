@@ -8,6 +8,7 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -58,5 +59,9 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public DatabaseReference getDatabaseReference () {
         return app.getDatabaseReference();
+    }
+
+    public StorageReference getStorageReference () {
+        return app.getStorageReference();
     }
 }

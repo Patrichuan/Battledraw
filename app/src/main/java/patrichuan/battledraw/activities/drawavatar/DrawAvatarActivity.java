@@ -1,10 +1,22 @@
 package patrichuan.battledraw.activities.drawavatar;
 
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.util.Log;
+import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.Button;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.ByteArrayOutputStream;
 
 import me.panavtec.drawableview.DrawableView;
 import me.panavtec.drawableview.DrawableViewConfig;
@@ -21,11 +33,22 @@ public class DrawAvatarActivity extends BaseActivity {
     private DatabaseReference databaseReference;
     private String roomName;
     private DrawableView drawLayout;
+    private Button btnIAmDone;
+
+    private StorageReference storageRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_draw_avatar);
+
+        storageRef = getStorageReference();
+        databaseReference = getDatabaseReference();
+
+        mAuth = getmAuth();
+
+        Bundle extras = getIntent().getExtras();
+        roomName = extras.getString("ROOM_NAME");
 
         drawLayout = (DrawableView) findViewById(R.id.drawLayout);
         if (drawLayout!=null) {
@@ -45,11 +68,32 @@ public class DrawAvatarActivity extends BaseActivity {
             });
         }
 
+        btnIAmDone = (Button) findViewById(R.id.btnIAmDone);
+        btnIAmDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bitmap bmp = drawLayout.obtainBitmap();
 
-        mAuth = getmAuth();
-        databaseReference = getDatabaseReference();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] data = baos.toByteArray();
 
-        Bundle extras = getIntent().getExtras();
-        roomName = extras.getString("ROOM_NAME");
+                // Create a reference to "test1.jpg"
+                StorageReference avatarRef = storageRef.child("avatars").child("test1.jpg");
+                avatarRef.putBytes(data)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            Log.d("DrawAvatarActivity", taskSnapshot.getMetadata().getDownloadUrl().toString());
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+
+                        }
+                    });
+            }
+        });
     }
 }

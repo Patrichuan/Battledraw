@@ -16,6 +16,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import patrichuan.battledraw.activities.splash.SplashActivity;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
@@ -32,6 +34,7 @@ public class BattleDrawApp extends Application {
 
     private FirebaseDatabase database;
     private DatabaseReference databaseReference;
+    private StorageReference storageRef;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
     int backButtonCount;
@@ -58,6 +61,7 @@ public class BattleDrawApp extends Application {
     private void InitializeFirebase() {
         database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference();
+        storageRef = FirebaseStorage.getInstance().getReference();
 
         mAuth = FirebaseAuth.getInstance();
         mAuth.addAuthStateListener(getAuthListener());
@@ -89,6 +93,9 @@ public class BattleDrawApp extends Application {
         return databaseReference;
     }
 
+    public StorageReference getStorageReference () {
+        return storageRef;
+    }
     // OTHER RELATED METHODS--------------------------------------------------------------------------------
 
     // Log Out intent
