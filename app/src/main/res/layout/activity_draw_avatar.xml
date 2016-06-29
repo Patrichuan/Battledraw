@@ -29,6 +29,7 @@
 
     <me.panavtec.drawableview.DrawableView
         android:id="@+id/drawLayout"
+        android:background="@color/colorWhite"
         android:layout_below="@+id/message"
         android:layout_above="@+id/btnIAmDone"
         android:layout_width="match_parent"

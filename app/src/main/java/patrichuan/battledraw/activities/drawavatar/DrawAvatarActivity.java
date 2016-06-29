@@ -75,16 +75,17 @@ public class DrawAvatarActivity extends BaseActivity {
                 Bitmap bmp = drawLayout.obtainBitmap();
 
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                bmp.compress(Bitmap.CompressFormat.PNG, 0, baos);
                 byte[] data = baos.toByteArray();
 
-                // Create a reference to "test1.jpg"
-                StorageReference avatarRef = storageRef.child("avatars").child("test1.jpg");
+                // Create a reference to "test1.png"
+                StorageReference avatarRef = storageRef.child("avatars").child("test1.png");
                 avatarRef.putBytes(data)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             Log.d("DrawAvatarActivity", taskSnapshot.getMetadata().getDownloadUrl().toString());
+                            // TODO - Subir uri a propiedad avatar del usuario getauth
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
