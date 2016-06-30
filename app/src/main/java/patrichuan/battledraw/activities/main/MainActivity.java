@@ -80,7 +80,6 @@ public class MainActivity extends BaseActivity {
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists()) {
                                 roomNameWrapper.setErrorEnabled(false);
-                                doJoinRoom();
                                 Intent intent = new Intent(MainActivity.this, DrawAvatarActivity.class);
                                 intent.putExtra("ROOM_NAME", roomName);
                                 startActivity(intent);
@@ -134,49 +133,7 @@ public class MainActivity extends BaseActivity {
         });
     }
 
-    private void doJoinRoom(){
-        databaseReference.child("rooms").child(roomName).child("players").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                @SuppressWarnings("unchecked")
-                Map<String, String> players = (Map<String, String>) dataSnapshot.getValue();
 
-                if( players == null ) {
-                    System.out.println("No players");
-                }
-                else {
-                    if (mAuth.getCurrentUser() != null) {
-                        if (!players.containsKey(mAuth.getCurrentUser().getUid())) {
-                            Map<String, Object> childUpdateMap;
-
-                            // Creo el player
-                            Player player = new Player(mAuth.getCurrentUser().getEmail());
-                            player.setInRoom(roomName);
-                            Map<String, Object> playerMap = player.toMap();
-                            childUpdateMap = new HashMap<>();
-                            childUpdateMap.put("/players/"+mAuth.getCurrentUser().getUid(), playerMap);
-                            databaseReference.updateChildren(childUpdateMap);
-
-                            // Actualizo la lista de jugadores de la room
-                            players.put(mAuth.getCurrentUser().getUid(), Constants.PLAYER_TYPE_JOINER);
-                            childUpdateMap = new HashMap<>();
-                            childUpdateMap.put("/rooms/"+roomName+"/players/", players);
-                            databaseReference.updateChildren(childUpdateMap);
-                        }
-                    } else {
-                        roomNameWrapper.setError("Sorry but you lost your session. Go to home !");
-                        Intent intent = new Intent(MainActivity.this, SplashActivity.class);
-                        startActivity(intent);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
 
     private void doCreateRoom() {
         Map<String, Object> childUpdateMap;
