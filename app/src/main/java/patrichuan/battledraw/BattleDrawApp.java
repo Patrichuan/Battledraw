@@ -96,8 +96,14 @@ public class BattleDrawApp extends Application {
     public StorageReference getStorageReference () {
         return storageRef;
     }
-    // OTHER RELATED METHODS--------------------------------------------------------------------------------
 
+
+
+
+
+
+
+    // OTHER RELATED METHODS--------------------------------------------------------------------------------
     // Log Out intent
     public void logOutIntent () {
         Intent i = new Intent(mContext, SplashActivity.class);

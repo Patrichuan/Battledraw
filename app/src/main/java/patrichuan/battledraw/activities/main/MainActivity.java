@@ -17,9 +17,9 @@ import java.util.Map;
 
 import patrichuan.battledraw.BaseActivity;
 import patrichuan.battledraw.Constants;
-import patrichuan.battledraw.Player;
+import patrichuan.battledraw.dao.Player;
 import patrichuan.battledraw.R;
-import patrichuan.battledraw.Room;
+import patrichuan.battledraw.dao.Room;
 import patrichuan.battledraw.activities.drawavatar.DrawAvatarActivity;
 import patrichuan.battledraw.activities.splash.SplashActivity;
 import patrichuan.battledraw.activities.waitingplayers.WaitingPlayersActivity;

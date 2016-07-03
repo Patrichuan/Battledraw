@@ -1,4 +1,4 @@
-package patrichuan.battledraw;
+package patrichuan.battledraw.dao;
 
 import android.util.Log;
 

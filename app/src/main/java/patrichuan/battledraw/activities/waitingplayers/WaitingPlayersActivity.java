@@ -1,5 +1,6 @@
 package patrichuan.battledraw.activities.waitingplayers;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -12,12 +13,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
 import java.util.Map;
-import java.util.Objects;
 
 import patrichuan.battledraw.BaseActivity;
 import patrichuan.battledraw.Constants;
-import patrichuan.battledraw.Player;
 import patrichuan.battledraw.R;
 
 /**
@@ -37,6 +37,8 @@ public class WaitingPlayersActivity extends BaseActivity {
     private TextView tv_avatar_player1, tv_avatar_player2, tv_avatar_player3, tv_avatar_player4,
             tv_avatar_player5, tv_avatar_player6, tv_avatar_player7, tv_avatar_player8;
 
+    MediaPlayer mediaPlayer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,11 +54,10 @@ public class WaitingPlayersActivity extends BaseActivity {
 
         tv_roomname.setText(roomName);
 
-
-
         databaseReference.child("rooms").child(roomName).child("players").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                doNewPlayerHasJoined();
                 final String playerValue = dataSnapshot.getValue().toString();
                 final String playerKey = dataSnapshot.getKey();
 
@@ -84,8 +85,6 @@ public class WaitingPlayersActivity extends BaseActivity {
 
                         }
                     });
-
-
                 }
             }
 
@@ -126,7 +125,12 @@ public class WaitingPlayersActivity extends BaseActivity {
 
         tv_avatar_player1 = (TextView) findViewById(R.id.tv_avatar_player1);
         tv_avatar_player2 = (TextView) findViewById(R.id.tv_avatar_player2);
+        tv_avatar_player3 = (TextView) findViewById(R.id.tv_avatar_player3);
+        tv_avatar_player4 = (TextView) findViewById(R.id.tv_avatar_player4);
+        tv_avatar_player5 = (TextView) findViewById(R.id.tv_avatar_player5);
         tv_avatar_player6 = (TextView) findViewById(R.id.tv_avatar_player6);
+        tv_avatar_player7 = (TextView) findViewById(R.id.tv_avatar_player7);
+        tv_avatar_player8 = (TextView) findViewById(R.id.tv_avatar_player8);
     }
 
     private void setAvatar(final int numPlayers, String pictureUri) {
@@ -134,29 +138,75 @@ public class WaitingPlayersActivity extends BaseActivity {
             case 1:
                 Glide.with(this).load(pictureUri).into(iv_avatar_player1);
                 tv_avatar_player1.setText("Player 1");
+                doOMGthisAvatarSong();
                 break;
             case 2:
                 Glide.with(this).load(pictureUri).into(iv_avatar_player2);
                 tv_avatar_player2.setText("Player 2");
+                doOMGthisAvatarSong();
                 break;
             case 3:
                 Glide.with(this).load(pictureUri).into(iv_avatar_player3);
+                tv_avatar_player3.setText("Player 3");
+                doOMGthisAvatarSong();
                 break;
             case 4:
                 Glide.with(this).load(pictureUri).into(iv_avatar_player4);
+                tv_avatar_player4.setText("Player 4");
+                doOMGthisAvatarSong();
                 break;
             case 5:
                 Glide.with(this).load(pictureUri).into(iv_avatar_player5);
+                tv_avatar_player5.setText("Player 5");
+                doOMGthisAvatarSong();
                 break;
             case 6:
                 Glide.with(this).load(pictureUri).into(iv_avatar_player6);
+                tv_avatar_player6.setText("Player 6");
+                doOMGthisAvatarSong();
                 break;
             case 7:
                 Glide.with(this).load(pictureUri).into(iv_avatar_player7);
+                tv_avatar_player7.setText("Player 7");
+                doOMGthisAvatarSong();
                 break;
             case 8:
                 Glide.with(this).load(pictureUri).into(iv_avatar_player8);
+                tv_avatar_player8.setText("Player 8");
+                doOMGthisAvatarSong();
                 break;
+        }
+    }
+
+    private void doOMGthisAvatarSong () {
+        try {
+            mediaPlayer = MediaPlayer.create(this, R.raw.omg_this_avatar);
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    mediaPlayer.release();
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void doNewPlayerHasJoined () {
+        try {
+            mediaPlayer = MediaPlayer.create(this, R.raw.new_player_has_joined);
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    mediaPlayer.release();
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

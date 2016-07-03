@@ -18,6 +18,19 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
+// TODO
+/*
+    - Leave Room
+    - Migrate to Fragments:
+        - creatorFlow
+        - joinerFlow
+    - Delete room if creator leave:
+        - change players inroom field
+        - delete room
+    - Rearrange players order if player leave
+    - Refactor
+ */
+
     private Pattern pattern = Pattern.compile(Constants.EMAIL_PATTERN);
     private BattleDrawApp app;
 

@@ -1,11 +1,8 @@
 package patrichuan.battledraw.activities.drawavatar;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
@@ -30,10 +27,8 @@ import me.panavtec.drawableview.DrawableView;
 import me.panavtec.drawableview.DrawableViewConfig;
 import patrichuan.battledraw.BaseActivity;
 import patrichuan.battledraw.Constants;
-import patrichuan.battledraw.Player;
+import patrichuan.battledraw.dao.Player;
 import patrichuan.battledraw.R;
-import patrichuan.battledraw.activities.main.MainActivity;
-import patrichuan.battledraw.activities.splash.SplashActivity;
 
 /**
  * Created by Pat on 23/06/2016.
