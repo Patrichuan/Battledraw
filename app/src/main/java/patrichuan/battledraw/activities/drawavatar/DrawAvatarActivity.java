@@ -79,12 +79,12 @@ public class DrawAvatarActivity extends BaseActivity {
         btnIAmDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                doJoinRoom();
+                doUpdateAvatar();
             }
         });
     }
 
-    private void doJoinRoom () {
+    private void doUpdateAvatar () {
         final FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser!=null) {
             final StorageReference avatarRef = storageRef.child("avatars").child(currentUser.getUid());
@@ -103,42 +103,6 @@ public class DrawAvatarActivity extends BaseActivity {
                                 final String avatarUri = metadata.getDownloadUrl().toString();
                                 final String player_uid = currentUser.getUid();
                                 databaseReference.child("players").child(player_uid).child("picture").setValue(avatarUri);
-                                databaseReference.child("rooms").child(roomName).child("players").addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        @SuppressWarnings("unchecked")
-                                        Map<String, String> players = (Map<String, String>) dataSnapshot.getValue();
-
-                                        if( players == null ) {
-                                            System.out.println("No players");
-                                        }
-                                        else {
-                                            if (!players.containsKey(currentUser.getUid())) {
-                                                Map<String, Object> childUpdateMap;
-
-                                                // Creo el player
-                                                Player player = new Player(currentUser.getEmail());
-                                                player.setInRoom(roomName);
-                                                player.setPicture(avatarUri);
-                                                Map<String, Object> playerMap = player.toMap();
-                                                childUpdateMap = new HashMap<>();
-                                                childUpdateMap.put("/players/"+currentUser.getUid(), playerMap);
-                                                databaseReference.updateChildren(childUpdateMap);
-
-                                                // Actualizo la lista de jugadores de la room
-                                                players.put(currentUser.getUid(), Constants.PLAYER_TYPE_JOINER);
-                                                childUpdateMap = new HashMap<>();
-                                                childUpdateMap.put("/rooms/"+roomName+"/players/", players);
-                                                databaseReference.updateChildren(childUpdateMap);
-                                            }
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
-
-                                    }
-                                });
                             }
                         }
                     })

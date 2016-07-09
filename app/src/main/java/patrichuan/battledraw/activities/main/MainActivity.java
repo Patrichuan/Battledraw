@@ -1,28 +1,37 @@
 package patrichuan.battledraw.activities.main;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 import patrichuan.battledraw.BaseActivity;
 import patrichuan.battledraw.Constants;
+import patrichuan.battledraw.activities.waitingplayers.NewWaitingPlayersActivity;
 import patrichuan.battledraw.dao.Player;
 import patrichuan.battledraw.R;
 import patrichuan.battledraw.dao.Room;
 import patrichuan.battledraw.activities.drawavatar.DrawAvatarActivity;
 import patrichuan.battledraw.activities.splash.SplashActivity;
-import patrichuan.battledraw.activities.waitingplayers.WaitingPlayersActivity;
 
 /**
  * Created by Pat on 13/06/2016.
@@ -75,11 +84,13 @@ public class MainActivity extends BaseActivity {
                 if (!validateRoomName(roomName)) {
                     roomNameWrapper.setError("Not a valid room name!");
                 } else {
+                    // Check if room already exists or not
                     databaseReference.child("rooms").child(roomName).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists()) {
                                 roomNameWrapper.setErrorEnabled(false);
+                                doJoinRoom();
                                 Intent intent = new Intent(MainActivity.this, DrawAvatarActivity.class);
                                 intent.putExtra("ROOM_NAME", roomName);
                                 startActivity(intent);
@@ -114,7 +125,7 @@ public class MainActivity extends BaseActivity {
                             if (!dataSnapshot.exists()) {
                                 roomNameWrapper.setErrorEnabled(false);
                                 doCreateRoom();
-                                Intent intent = new Intent(MainActivity.this, WaitingPlayersActivity.class);
+                                Intent intent = new Intent(MainActivity.this, NewWaitingPlayersActivity.class);
                                 intent.putExtra("ROOM_NAME", roomName);
                                 startActivity(intent);
                             } else {
@@ -163,5 +174,48 @@ public class MainActivity extends BaseActivity {
         childUpdateMap = new HashMap<>();
         childUpdateMap.put("/players/"+mAuth.getCurrentUser().getUid(), playerMap);
         databaseReference.updateChildren(childUpdateMap);
+    }
+
+    private void doJoinRoom () {
+        final FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser!=null) {
+            final String player_uid = currentUser.getUid();
+            databaseReference.child("rooms").child(roomName).child("players").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    @SuppressWarnings("unchecked")
+                    Map<String, String> players = (Map<String, String>) dataSnapshot.getValue();
+                    if( players == null ) {
+                        System.out.println("No players");
+                    }
+                    else {
+                        if (!players.containsKey(currentUser.getUid())) {
+                            Map<String, Object> childUpdateMap;
+
+                            // Creo el player
+                            Player player = new Player(currentUser.getEmail());
+                            player.setInRoom(roomName);
+                            Map<String, Object> playerMap = player.toMap();
+                            childUpdateMap = new HashMap<>();
+                            childUpdateMap.put("/players/"+currentUser.getUid(), playerMap);
+                            databaseReference.updateChildren(childUpdateMap);
+
+                            // Actualizo la lista de jugadores de la room
+                            players.put(currentUser.getUid(), Constants.PLAYER_TYPE_JOINER);
+                            childUpdateMap = new HashMap<>();
+                            childUpdateMap.put("/rooms/"+roomName+"/players/", players);
+                            databaseReference.updateChildren(childUpdateMap);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        } else {
+            finish();
+        }
     }
 }

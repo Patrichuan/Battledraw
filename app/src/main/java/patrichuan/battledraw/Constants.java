@@ -16,4 +16,7 @@ public class Constants {
     static final int PASSWORD_MAX_LENGH = 10;
     static final int ROOMNAME_MIN_LENGH = 5;
     static final int ROOMNAME_MAX_LENGH = 10;
+
+    // Arguments
+    public static final String ARG_ROOM = "arg.room";
 }
