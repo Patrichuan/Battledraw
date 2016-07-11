@@ -1,4 +1,4 @@
-package patrichuan.battledraw;
+package patrichuan.battledraw.presentation;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -13,6 +13,8 @@ import com.google.firebase.storage.StorageReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import patrichuan.battledraw.BattleDrawApp;
+import patrichuan.battledraw.util.Constants;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
@@ -21,9 +23,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 // TODO
 /*
     - Leave Room
-    - Migrate to Fragments:
-        - creatorFlow
-        - joinerFlow
     - Delete room if creator leave:
         - change players inroom field
         - delete room

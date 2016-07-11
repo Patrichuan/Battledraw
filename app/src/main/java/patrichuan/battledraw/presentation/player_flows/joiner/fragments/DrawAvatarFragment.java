@@ -1,63 +1,78 @@
-package patrichuan.battledraw.activities.drawavatar;
+package patrichuan.battledraw.presentation.player_flows.joiner.fragments;
 
+import android.annotation.TargetApi;
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import me.panavtec.drawableview.DrawableView;
 import me.panavtec.drawableview.DrawableViewConfig;
-import patrichuan.battledraw.BaseActivity;
-import patrichuan.battledraw.Constants;
-import patrichuan.battledraw.dao.Player;
 import patrichuan.battledraw.R;
+import patrichuan.battledraw.presentation.player_flows.creator.activities.CreatorBaseActivity;
+import patrichuan.battledraw.presentation.player_flows.joiner.activities.JoinerBaseActivity;
+import patrichuan.battledraw.util.Constants;
 
 /**
  * Created by Pat on 23/06/2016.
  */
 
-public class DrawAvatarActivity extends BaseActivity {
+public class DrawAvatarFragment extends Fragment {
 
-    private FirebaseAuth mAuth;
-    private DatabaseReference databaseReference;
+    private JoinerBaseActivity activity;
+
     private String roomName;
     private DrawableView drawLayout;
     private Button btnIAmDone;
 
-    private StorageReference storageRef;
+
+    public DrawAvatarFragment() {
+
+    }
+
+    public static DrawAvatarFragment newInstance(String roomName) {
+        DrawAvatarFragment fragment = new DrawAvatarFragment();
+        Bundle args = new Bundle();
+        args.putString(Constants.ARG_ROOM, roomName);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_draw_avatar);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_draw_avatar, container, false);
+        instanceViews(rootView);
+        return rootView;
+    }
 
-        storageRef = getStorageReference();
-        databaseReference = getDatabaseReference();
 
-        mAuth = getmAuth();
+    private void instanceViews(View rootView) {
+        drawLayout = (DrawableView) rootView.findViewById(R.id.drawLayout);
+        btnIAmDone = (Button) rootView.findViewById(R.id.btnIAmDone);
+    }
 
-        Bundle extras = getIntent().getExtras();
-        roomName = extras.getString("ROOM_NAME");
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        roomName = getArguments().getString(Constants.ARG_ROOM);
 
-        drawLayout = (DrawableView) findViewById(R.id.drawLayout);
         if (drawLayout!=null) {
             drawLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
@@ -75,7 +90,7 @@ public class DrawAvatarActivity extends BaseActivity {
             });
         }
 
-        btnIAmDone = (Button) findViewById(R.id.btnIAmDone);
+
         btnIAmDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -84,10 +99,12 @@ public class DrawAvatarActivity extends BaseActivity {
         });
     }
 
+
+
     private void doUpdateAvatar () {
-        final FirebaseUser currentUser = mAuth.getCurrentUser();
+        final FirebaseUser currentUser = activity.getmAuth().getCurrentUser();
         if (currentUser!=null) {
-            final StorageReference avatarRef = storageRef.child("avatars").child(currentUser.getUid());
+            final StorageReference avatarRef = activity.getStorageReference().child("avatars").child(currentUser.getUid());
             Bitmap bmp = drawLayout.obtainBitmap();
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -102,7 +119,7 @@ public class DrawAvatarActivity extends BaseActivity {
                             if (metadata != null && metadata.getDownloadUrl() != null) {
                                 final String avatarUri = metadata.getDownloadUrl().toString();
                                 final String player_uid = currentUser.getUid();
-                                databaseReference.child("players").child(player_uid).child("picture").setValue(avatarUri);
+                                activity.getDatabaseReference().child("players").child(player_uid).child("picture").setValue(avatarUri);
                             }
                         }
                     })
@@ -113,7 +130,29 @@ public class DrawAvatarActivity extends BaseActivity {
                         }
                     });
         } else {
-            finish();
+
+        }
+    }
+
+
+    // onAttach para apis mayores y menores de la 23 -----------------------------------------------
+    @TargetApi(23)
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        onAttachToContext(context);
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        onAttachToContext(activity);
+    }
+
+    private void onAttachToContext(Context context) {
+        if (context instanceof Activity){
+            activity = (JoinerBaseActivity) context;
         }
     }
 }

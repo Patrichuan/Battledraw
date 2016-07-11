@@ -1,37 +1,27 @@
-package patrichuan.battledraw.activities.main;
+package patrichuan.battledraw.presentation.activities.main;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.view.View;
 import android.widget.Button;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.StorageMetadata;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
-import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import patrichuan.battledraw.BaseActivity;
-import patrichuan.battledraw.Constants;
-import patrichuan.battledraw.activities.waitingplayers.NewWaitingPlayersActivity;
-import patrichuan.battledraw.dao.Player;
+import patrichuan.battledraw.presentation.BaseActivity;
+import patrichuan.battledraw.presentation.player_flows.creator.activities.CreatorBaseActivity;
+import patrichuan.battledraw.presentation.player_flows.joiner.activities.JoinerBaseActivity;
+import patrichuan.battledraw.util.Constants;
+import patrichuan.battledraw.model.Player;
 import patrichuan.battledraw.R;
-import patrichuan.battledraw.dao.Room;
-import patrichuan.battledraw.activities.drawavatar.DrawAvatarActivity;
-import patrichuan.battledraw.activities.splash.SplashActivity;
+import patrichuan.battledraw.model.Room;
+import patrichuan.battledraw.presentation.activities.splash.SplashActivity;
 
 /**
  * Created by Pat on 13/06/2016.
@@ -39,21 +29,17 @@ import patrichuan.battledraw.activities.splash.SplashActivity;
 
 public class MainActivity extends BaseActivity {
 
-    private FirebaseAuth mAuth;
-    private DatabaseReference databaseReference;
-
     private TextInputLayout roomNameWrapper;
     private Button btnLogOut, btnJoinRoom, btnCreateRoom;
     private String roomName = "";
+    private Map<String, Object> childUpdateMap;
+    private Map<String, String> players = new HashMap<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        mAuth = getmAuth();
-        databaseReference = getDatabaseReference();
-
         instanceViews();
         setListeners();
     }
@@ -69,7 +55,7 @@ public class MainActivity extends BaseActivity {
         btnLogOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mAuth.signOut();
+                getmAuth().signOut();
             }
         });
 
@@ -85,13 +71,13 @@ public class MainActivity extends BaseActivity {
                     roomNameWrapper.setError("Not a valid room name!");
                 } else {
                     // Check if room already exists or not
-                    databaseReference.child("rooms").child(roomName).addListenerForSingleValueEvent(new ValueEventListener() {
+                    getDatabaseReference().child("rooms").child(roomName).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists()) {
                                 roomNameWrapper.setErrorEnabled(false);
                                 doJoinRoom();
-                                Intent intent = new Intent(MainActivity.this, DrawAvatarActivity.class);
+                                Intent intent = new Intent(MainActivity.this, JoinerBaseActivity.class);
                                 intent.putExtra("ROOM_NAME", roomName);
                                 startActivity(intent);
                             } else {
@@ -119,13 +105,13 @@ public class MainActivity extends BaseActivity {
                 if (!validateRoomName(roomName)) {
                     roomNameWrapper.setError("Not a valid room name!");
                 } else {
-                    databaseReference.child("rooms").child(roomName).addListenerForSingleValueEvent(new ValueEventListener() {
+                    getDatabaseReference().child("rooms").child(roomName).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if (!dataSnapshot.exists()) {
                                 roomNameWrapper.setErrorEnabled(false);
                                 doCreateRoom();
-                                Intent intent = new Intent(MainActivity.this, NewWaitingPlayersActivity.class);
+                                Intent intent = new Intent(MainActivity.this, CreatorBaseActivity.class);
                                 intent.putExtra("ROOM_NAME", roomName);
                                 startActivity(intent);
                             } else {
@@ -147,40 +133,37 @@ public class MainActivity extends BaseActivity {
 
 
     private void doCreateRoom() {
-        Map<String, Object> childUpdateMap;
+        final FirebaseUser currentUser = getmAuth().getCurrentUser();
+        if (currentUser!=null) {
+            players.put(getmAuth().getCurrentUser().getUid(), Constants.PLAYER_TYPE_CREATOR);
 
-        // Creo la lista de jugadores de la room con el creador como unico jugador
-        Map<String, String> players = new HashMap<>();
-        if (mAuth.getCurrentUser()!=null) {
-            players.put(mAuth.getCurrentUser().getUid(), Constants.PLAYER_TYPE_CREATOR);
+            // Creo la room
+            Room room = new Room();
+            room.setPlayers(players);
+            Map<String, Object> roomMap = room.toMap();
+            childUpdateMap = new HashMap<>();
+            childUpdateMap.put("/rooms/"+roomName, roomMap);
+            getDatabaseReference().updateChildren(childUpdateMap);
+
+            // Creo el player
+            Player player = new Player(getmAuth().getCurrentUser().getEmail());
+            player.setInRoom(roomName);
+            Map<String, Object> playerMap = player.toMap();
+            childUpdateMap = new HashMap<>();
+            childUpdateMap.put("/players/"+getmAuth().getCurrentUser().getUid(), playerMap);
+            getDatabaseReference().updateChildren(childUpdateMap);
         } else {
             roomNameWrapper.setError("Sorry but you lost your session. Go to home !");
             Intent intent = new Intent(MainActivity.this, SplashActivity.class);
             startActivity(intent);
+            finish();
         }
-
-        // Creo la room
-        Room room = new Room();
-        room.setPlayers(players);
-        Map<String, Object> roomMap = room.toMap();
-        childUpdateMap = new HashMap<>();
-        childUpdateMap.put("/rooms/"+roomName, roomMap);
-        databaseReference.updateChildren(childUpdateMap);
-
-        // Creo el player
-        Player player = new Player(mAuth.getCurrentUser().getEmail());
-        player.setInRoom(roomName);
-        Map<String, Object> playerMap = player.toMap();
-        childUpdateMap = new HashMap<>();
-        childUpdateMap.put("/players/"+mAuth.getCurrentUser().getUid(), playerMap);
-        databaseReference.updateChildren(childUpdateMap);
     }
 
     private void doJoinRoom () {
-        final FirebaseUser currentUser = mAuth.getCurrentUser();
+        final FirebaseUser currentUser = getmAuth().getCurrentUser();
         if (currentUser!=null) {
-            final String player_uid = currentUser.getUid();
-            databaseReference.child("rooms").child(roomName).child("players").addListenerForSingleValueEvent(new ValueEventListener() {
+            getDatabaseReference().child("rooms").child(roomName).child("players").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     @SuppressWarnings("unchecked")
@@ -198,13 +181,13 @@ public class MainActivity extends BaseActivity {
                             Map<String, Object> playerMap = player.toMap();
                             childUpdateMap = new HashMap<>();
                             childUpdateMap.put("/players/"+currentUser.getUid(), playerMap);
-                            databaseReference.updateChildren(childUpdateMap);
+                            getDatabaseReference().updateChildren(childUpdateMap);
 
                             // Actualizo la lista de jugadores de la room
                             players.put(currentUser.getUid(), Constants.PLAYER_TYPE_JOINER);
                             childUpdateMap = new HashMap<>();
                             childUpdateMap.put("/rooms/"+roomName+"/players/", players);
-                            databaseReference.updateChildren(childUpdateMap);
+                            getDatabaseReference().updateChildren(childUpdateMap);
                         }
                     }
                 }
@@ -215,6 +198,9 @@ public class MainActivity extends BaseActivity {
                 }
             });
         } else {
+            roomNameWrapper.setError("Sorry but you lost your session. Go to home !");
+            Intent intent = new Intent(MainActivity.this, SplashActivity.class);
+            startActivity(intent);
             finish();
         }
     }

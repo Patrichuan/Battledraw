@@ -1,42 +1,24 @@
-package patrichuan.battledraw.activities.waitingplayers;
+package patrichuan.battledraw.presentation.player_flows.creator.activities;
 
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
-
-import java.io.IOException;
-import java.util.Map;
-
-import patrichuan.battledraw.BaseActivity;
-import patrichuan.battledraw.Constants;
+import patrichuan.battledraw.presentation.BaseActivity;
 import patrichuan.battledraw.R;
-import patrichuan.battledraw.fragments.WaitingPlayersFragment;
+import patrichuan.battledraw.presentation.player_flows.creator.fragments.WaitingPlayersFragment;
 
 /**
  * Created by Pat on 23/06/2016.
  */
 
-public class NewWaitingPlayersActivity extends BaseActivity {
+public class CreatorBaseActivity extends BaseActivity {
 
     private MediaPlayer mediaPlayer;
-
-    private FirebaseAuth mAuth;
-    private DatabaseReference databaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_newwaiting_players);
+        setContentView(R.layout.activity_creator_base);
 
         Bundle extras = getIntent().getExtras();
 

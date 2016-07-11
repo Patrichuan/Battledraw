@@ -1,4 +1,4 @@
-package patrichuan.battledraw.activities.initial;
+package patrichuan.battledraw.presentation.activities.initial;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,9 +15,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import patrichuan.battledraw.BaseActivity;
+import patrichuan.battledraw.presentation.BaseActivity;
 import patrichuan.battledraw.R;
-import patrichuan.battledraw.activities.main.MainActivity;
+import patrichuan.battledraw.presentation.activities.main.MainActivity;
 
 /**
  * Created by Pat on 13/06/2016.

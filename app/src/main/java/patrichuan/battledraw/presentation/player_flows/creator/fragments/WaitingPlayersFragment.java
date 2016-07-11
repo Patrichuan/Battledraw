@@ -1,6 +1,5 @@
-package patrichuan.battledraw.fragments;
+package patrichuan.battledraw.presentation.player_flows.creator.fragments;
 
-import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
@@ -14,8 +13,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.daasuu.ei.Ease;
-import com.daasuu.ei.EasingInterpolator;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -23,15 +20,14 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.Map;
 
-import patrichuan.battledraw.Constants;
+import patrichuan.battledraw.presentation.player_flows.creator.activities.CreatorBaseActivity;
+import patrichuan.battledraw.util.Constants;
 import patrichuan.battledraw.R;
-import patrichuan.battledraw.activities.waitingplayers.NewWaitingPlayersActivity;
 
 
 public class WaitingPlayersFragment extends Fragment {
 
-    private NewWaitingPlayersActivity activity;
-    private LayoutInflater inflater;
+    private CreatorBaseActivity activity;
 
     private String roomName;
     private TextView tv_roomname;
@@ -61,7 +57,6 @@ public class WaitingPlayersFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        this.inflater = inflater;
         View rootView = inflater.inflate(R.layout.fragment_waiting_players, container, false);
         instanceViews(rootView);
         return rootView;
@@ -279,7 +274,7 @@ public class WaitingPlayersFragment extends Fragment {
 
     private void onAttachToContext(Context context) {
         if (context instanceof Activity){
-            activity = (NewWaitingPlayersActivity) context;
+            activity = (CreatorBaseActivity) context;
         }
     }
 }

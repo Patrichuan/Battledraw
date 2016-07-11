@@ -12,38 +12,39 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".activities.splash.SplashActivity">
+        <activity
+            android:name=".presentation.activities.splash.SplashActivity"
+            android:label="Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <activity
-            android:name=".activities.main.MainActivity"
-            android:label="Main"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme">
-        </activity>
-
-        <activity
-            android:name=".activities.initial.InitialActivity"
+            android:name=".presentation.activities.initial.InitialActivity"
             android:label="Initial"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
         </activity>
 
         <activity
-            android:name=".activities.waitingplayers.NewWaitingPlayersActivity"
+            android:name=".presentation.activities.main.MainActivity"
             android:label="Main"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme">
+        </activity>
+
+        <activity
+            android:name=".presentation.player_flows.creator.activities.CreatorBaseActivity"
+            android:label="Creator"
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme">
         </activity>
 
         <activity
-            android:name=".activities.drawavatar.DrawAvatarActivity"
-            android:label="Main"
+            android:name=".presentation.player_flows.joiner.activities.JoinerBaseActivity"
+            android:label="Joiner"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
         </activity>

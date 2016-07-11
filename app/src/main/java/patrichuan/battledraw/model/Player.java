@@ -1,4 +1,4 @@
-package patrichuan.battledraw.dao;
+package patrichuan.battledraw.model;
 
 import java.util.HashMap;
 import java.util.Map;

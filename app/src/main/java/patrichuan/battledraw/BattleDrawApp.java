@@ -19,7 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import patrichuan.battledraw.activities.splash.SplashActivity;
+import patrichuan.battledraw.presentation.activities.splash.SplashActivity;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 /**
