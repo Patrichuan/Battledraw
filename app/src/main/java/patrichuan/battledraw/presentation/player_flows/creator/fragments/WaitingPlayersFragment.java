@@ -28,7 +28,6 @@ import patrichuan.battledraw.R;
 
 
 public class WaitingPlayersFragment extends Fragment {
-
     private CreatorBaseActivity activity;
     private TextView tv_roomname;
 
