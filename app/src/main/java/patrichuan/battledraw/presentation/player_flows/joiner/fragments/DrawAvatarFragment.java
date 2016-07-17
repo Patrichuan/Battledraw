@@ -135,6 +135,8 @@ public class DrawAvatarFragment extends Fragment {
     }
 
 
+
+
     // onAttach para apis mayores y menores de la 23 -----------------------------------------------
     @TargetApi(23)
     @Override

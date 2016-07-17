@@ -32,8 +32,6 @@ public class MainActivity extends BaseActivity {
     private TextInputLayout roomNameWrapper;
     private Button btnLogOut, btnJoinRoom, btnCreateRoom;
     private String roomName = "";
-    private Map<String, Object> childUpdateMap;
-    private Map<String, String> players = new HashMap<>();
 
 
     @Override
@@ -77,9 +75,6 @@ public class MainActivity extends BaseActivity {
                             if (dataSnapshot.exists()) {
                                 roomNameWrapper.setErrorEnabled(false);
                                 doJoinRoom();
-                                Intent intent = new Intent(MainActivity.this, JoinerBaseActivity.class);
-                                intent.putExtra("ROOM_NAME", roomName);
-                                startActivity(intent);
                             } else {
                                 roomNameWrapper.setError("Sorry but room '" + roomName + "' doesnt exist !");
                             }
@@ -111,9 +106,6 @@ public class MainActivity extends BaseActivity {
                             if (!dataSnapshot.exists()) {
                                 roomNameWrapper.setErrorEnabled(false);
                                 doCreateRoom();
-                                Intent intent = new Intent(MainActivity.this, CreatorBaseActivity.class);
-                                intent.putExtra("ROOM_NAME", roomName);
-                                startActivity(intent);
                             } else {
                                 roomNameWrapper.setError("Sorry but room '" + roomName + "' already exists !");
                             }
@@ -135,23 +127,9 @@ public class MainActivity extends BaseActivity {
     private void doCreateRoom() {
         final FirebaseUser currentUser = getmAuth().getCurrentUser();
         if (currentUser!=null) {
-            players.put(getmAuth().getCurrentUser().getUid(), Constants.PLAYER_TYPE_CREATOR);
-
-            // Creo la room
-            Room room = new Room();
-            room.setPlayers(players);
-            Map<String, Object> roomMap = room.toMap();
-            childUpdateMap = new HashMap<>();
-            childUpdateMap.put("/rooms/"+roomName, roomMap);
-            getDatabaseReference().updateChildren(childUpdateMap);
-
-            // Creo el player
-            Player player = new Player(getmAuth().getCurrentUser().getEmail());
-            player.setInRoom(roomName);
-            Map<String, Object> playerMap = player.toMap();
-            childUpdateMap = new HashMap<>();
-            childUpdateMap.put("/players/"+getmAuth().getCurrentUser().getUid(), playerMap);
-            getDatabaseReference().updateChildren(childUpdateMap);
+            Intent intent = new Intent(MainActivity.this, CreatorBaseActivity.class);
+            intent.putExtra("ROOM_NAME", roomName);
+            startActivity(intent);
         } else {
             roomNameWrapper.setError("Sorry but you lost your session. Go to home !");
             Intent intent = new Intent(MainActivity.this, SplashActivity.class);
@@ -163,40 +141,9 @@ public class MainActivity extends BaseActivity {
     private void doJoinRoom () {
         final FirebaseUser currentUser = getmAuth().getCurrentUser();
         if (currentUser!=null) {
-            getDatabaseReference().child("rooms").child(roomName).child("players").addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    @SuppressWarnings("unchecked")
-                    Map<String, String> players = (Map<String, String>) dataSnapshot.getValue();
-                    if( players == null ) {
-                        System.out.println("No players");
-                    }
-                    else {
-                        if (!players.containsKey(currentUser.getUid())) {
-                            Map<String, Object> childUpdateMap;
-
-                            // Creo el player
-                            Player player = new Player(currentUser.getEmail());
-                            player.setInRoom(roomName);
-                            Map<String, Object> playerMap = player.toMap();
-                            childUpdateMap = new HashMap<>();
-                            childUpdateMap.put("/players/"+currentUser.getUid(), playerMap);
-                            getDatabaseReference().updateChildren(childUpdateMap);
-
-                            // Actualizo la lista de jugadores de la room
-                            players.put(currentUser.getUid(), Constants.PLAYER_TYPE_JOINER);
-                            childUpdateMap = new HashMap<>();
-                            childUpdateMap.put("/rooms/"+roomName+"/players/", players);
-                            getDatabaseReference().updateChildren(childUpdateMap);
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
+            Intent intent = new Intent(MainActivity.this, JoinerBaseActivity.class);
+            intent.putExtra("ROOM_NAME", roomName);
+            startActivity(intent);
         } else {
             roomNameWrapper.setError("Sorry but you lost your session. Go to home !");
             Intent intent = new Intent(MainActivity.this, SplashActivity.class);

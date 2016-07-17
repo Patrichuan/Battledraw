@@ -1,7 +1,7 @@
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fitsSystemWindows="true">
 
     <RelativeLayout
@@ -12,7 +12,7 @@
             android:layout_alignParentBottom="true"
             android:id="@+id/btnCreateRoom"
             android:text="CREATE ROOM"
-            android:background="@color/colorPrimary"
+            android:background="@color/colorPrimaryDeactivated"
             android:textColor="@color/colorWhite"
             android:textSize="@dimen/_12sdp"
             android:minHeight="40dp"
@@ -86,7 +86,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_60sdp" />
 
-                        <ProgressBar
+                        <com.wang.avi.AVLoadingIndicatorView
+                            app:indicator="BallScaleMultiple"
+                            app:indicator_color="@color/colorAccent"
                             android:id="@+id/progressBar6"
                             android:visibility="invisible"
                             android:layout_centerInParent="true"
@@ -114,7 +116,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_60sdp" />
 
-                        <ProgressBar
+                        <com.wang.avi.AVLoadingIndicatorView
+                            app:indicator="BallScaleMultiple"
+                            app:indicator_color="@color/colorAccent"
                             android:id="@+id/progressBar4"
                             android:visibility="invisible"
                             android:layout_centerInParent="true"
@@ -144,7 +148,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_60sdp" />
 
-                        <ProgressBar
+                        <com.wang.avi.AVLoadingIndicatorView
+                            app:indicator="BallScaleMultiple"
+                            app:indicator_color="@color/colorAccent"
                             android:id="@+id/progressBar1"
                             android:visibility="invisible"
                             android:layout_centerInParent="true"
@@ -174,7 +180,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_60sdp" />
 
-                        <ProgressBar
+                        <com.wang.avi.AVLoadingIndicatorView
+                            app:indicator="BallScaleMultiple"
+                            app:indicator_color="@color/colorAccent"
                             android:id="@+id/progressBar7"
                             android:visibility="invisible"
                             android:layout_centerInParent="true"
@@ -207,7 +215,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_60sdp" />
 
-                        <ProgressBar
+                        <com.wang.avi.AVLoadingIndicatorView
+                            app:indicator="BallScaleMultiple"
+                            app:indicator_color="@color/colorAccent"
                             android:id="@+id/progressBar8"
                             android:visibility="invisible"
                             android:layout_centerInParent="true"
@@ -235,7 +245,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_60sdp" />
 
-                        <ProgressBar
+                        <com.wang.avi.AVLoadingIndicatorView
+                            app:indicator="BallScaleMultiple"
+                            app:indicator_color="@color/colorAccent"
                             android:id="@+id/progressBar2"
                             android:visibility="invisible"
                             android:layout_centerInParent="true"
@@ -265,7 +277,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_60sdp" />
 
-                        <ProgressBar
+                        <com.wang.avi.AVLoadingIndicatorView
+                            app:indicator="BallScaleMultiple"
+                            app:indicator_color="@color/colorAccent"
                             android:id="@+id/progressBar3"
                             android:visibility="invisible"
                             android:layout_centerInParent="true"
@@ -295,7 +309,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_60sdp" />
 
-                        <ProgressBar
+                        <com.wang.avi.AVLoadingIndicatorView
+                            app:indicator="BallScaleMultiple"
+                            app:indicator_color="@color/colorAccent"
                             android:id="@+id/progressBar5"
                             android:visibility="invisible"
                             android:layout_centerInParent="true"
