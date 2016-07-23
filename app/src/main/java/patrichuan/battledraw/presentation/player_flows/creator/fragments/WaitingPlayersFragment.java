@@ -22,6 +22,7 @@ import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.Map;
 
+import patrichuan.battledraw.model.Player;
 import patrichuan.battledraw.presentation.player_flows.creator.activities.CreatorBaseActivity;
 import patrichuan.battledraw.util.Constants;
 import patrichuan.battledraw.R;
@@ -40,10 +41,12 @@ public class WaitingPlayersFragment extends Fragment {
     private TextView tv_avatar_player1, tv_avatar_player2, tv_avatar_player3, tv_avatar_player4,
             tv_avatar_player5, tv_avatar_player6, tv_avatar_player7, tv_avatar_player8;
 
+    private ValueEventListener avatarListener;
+    private ChildEventListener playerListener;
+
     public WaitingPlayersFragment() {
 
     }
-
 
     public static WaitingPlayersFragment newInstance(String roomName) {
         WaitingPlayersFragment fragment = new WaitingPlayersFragment();
@@ -53,14 +56,13 @@ public class WaitingPlayersFragment extends Fragment {
         return fragment;
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_waiting_players, container, false);
         instanceViews(rootView);
+        instanceListeners();
         return rootView;
     }
-
 
     private void instanceViews(View rootView) {
         // ROOM
@@ -95,6 +97,75 @@ public class WaitingPlayersFragment extends Fragment {
         tv_avatar_player8 = (TextView) rootView.findViewById(R.id.tv_avatar_player8);
     }
 
+    private void instanceListeners () {
+        avatarListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot!=null) {
+                    String pictureUri = dataSnapshot.getValue().toString();
+                    setAvatar(activity.getNumJoiners(), pictureUri);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        playerListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                final String playerValue = dataSnapshot.getValue().toString();
+                final String playerKey = dataSnapshot.getKey();
+                if (playerValue.equals(Constants.PLAYER_TYPE_JOINER)) {
+                    activity.getDatabaseReference().child("players").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            activity.addJoiner(playerKey);
+                            activity.getDatabaseReference().child("players").child(playerKey).child("picture").addValueEventListener(avatarListener);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                final String playerValue = dataSnapshot.getValue().toString();
+                final String playerKey = dataSnapshot.getKey();
+                if (playerValue.equals(Constants.PLAYER_TYPE_JOINER)) {
+                    activity.getDatabaseReference().child("players").child(playerKey).child("picture").removeEventListener(avatarListener);
+                    activity.getDatabaseReference().child("players").child(playerKey).removeValue(new DatabaseReference.CompletionListener() {
+                        @Override
+                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                            setAvatar(activity.getJoinerPos(playerKey), null);
+                            activity.removeJoiner(playerKey);
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -102,101 +173,7 @@ public class WaitingPlayersFragment extends Fragment {
         String roomName = getArguments().getString(Constants.ARG_ROOM);
         if (roomName!=null) {
             tv_roomname.setText(roomName);
-            activity.getDatabaseReference().child("rooms").child(roomName).child("players").addChildEventListener(new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    final String playerValue = dataSnapshot.getValue().toString();
-                    final String playerKey = dataSnapshot.getKey();
-
-                    // A player has joined (standard avatar)
-                    if (playerValue.equals(Constants.PLAYER_TYPE_JOINER)) {
-                        activity.getDatabaseReference().child("players").addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                activity.addJoiner(playerKey);
-                                activity.getDatabaseReference().child("players").child(playerKey).child("picture").addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        String pictureUri = dataSnapshot.getValue().toString();
-                                        setAvatar(activity.getNumJoiners(), pictureUri);
-                                    }
-
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
-
-                                    }
-                                });
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        });
-                    }
-                }
-
-                @Override
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                    final String playerValue = dataSnapshot.getValue().toString();
-                    final String playerKey = dataSnapshot.getKey();
-
-                    // A player has joined (standard avatar)
-                    if (playerValue.equals(Constants.PLAYER_TYPE_JOINER)) {
-                        activity.getDatabaseReference().child("players").addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                activity.getDatabaseReference().child("players").child(playerKey).child("picture").addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        String pictureUri = dataSnapshot.getValue().toString();
-                                        setAvatar(activity.getNumJoiners(), pictureUri);
-                                    }
-
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
-
-                                    }
-                                });
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        });
-                    }
-                }
-
-                @Override
-                public void onChildRemoved(DataSnapshot dataSnapshot) {
-                    final String playerValue = dataSnapshot.getValue().toString();
-                    final String playerKey = dataSnapshot.getKey();
-
-                    // A player has joined (standard avatar)
-                    if (playerValue.equals(Constants.PLAYER_TYPE_JOINER)) {
-                        activity.getDatabaseReference().child("players").child(playerKey).removeValue(new DatabaseReference.CompletionListener() {
-                            @Override
-                            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                                // FIXME Implementar "Leave Room" option
-                                setAvatar(activity.getJoinerPos(playerKey), null);
-                                activity.removeJoiner(playerKey);
-                            }
-                        });
-                    }
-                }
-
-                @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-                    final String playerValue = dataSnapshot.getValue().toString();
-                    final String playerKey = dataSnapshot.getKey();
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
+            activity.getDatabaseReference().child("rooms").child(roomName).child("players").addChildEventListener(playerListener);
         }
     }
 
@@ -219,7 +196,11 @@ public class WaitingPlayersFragment extends Fragment {
                 }
                 break;
             case 2:
-                if (pictureUri.equals("no_picture")) {
+                if (pictureUri==null) {
+                    progressBar1.setVisibility(View.INVISIBLE);
+                    iv_avatar_player2.setImageDrawable(null);
+                    tv_avatar_player2.setText("");
+                } else if (pictureUri.equals("no_picture")) {
                     activity.doNewPlayerHasJoined();
                     progressBar2.setVisibility(View.VISIBLE);
                 } else {
@@ -230,7 +211,11 @@ public class WaitingPlayersFragment extends Fragment {
                 }
                 break;
             case 3:
-                if (pictureUri.equals("no_picture")) {
+                if (pictureUri==null) {
+                    progressBar1.setVisibility(View.INVISIBLE);
+                    iv_avatar_player3.setImageDrawable(null);
+                    tv_avatar_player3.setText("");
+                } else if (pictureUri.equals("no_picture")) {
                     activity.doNewPlayerHasJoined();
                     progressBar3.setVisibility(View.VISIBLE);
                 } else {
@@ -241,7 +226,11 @@ public class WaitingPlayersFragment extends Fragment {
                 }
                 break;
             case 4:
-                if (pictureUri.equals("no_picture")) {
+                if (pictureUri==null) {
+                    progressBar1.setVisibility(View.INVISIBLE);
+                    iv_avatar_player4.setImageDrawable(null);
+                    tv_avatar_player4.setText("");
+                } else if (pictureUri.equals("no_picture")) {
                     activity.doNewPlayerHasJoined();
                     progressBar4.setVisibility(View.VISIBLE);
                 } else {
@@ -252,7 +241,11 @@ public class WaitingPlayersFragment extends Fragment {
                 }
                 break;
             case 5:
-                if (pictureUri.equals("no_picture")) {
+                if (pictureUri==null) {
+                    progressBar1.setVisibility(View.INVISIBLE);
+                    iv_avatar_player5.setImageDrawable(null);
+                    tv_avatar_player5.setText("");
+                } else if (pictureUri.equals("no_picture")) {
                     activity.doNewPlayerHasJoined();
                     progressBar5.setVisibility(View.VISIBLE);
                 } else {
@@ -263,7 +256,11 @@ public class WaitingPlayersFragment extends Fragment {
                 }
                 break;
             case 6:
-                if (pictureUri.equals("no_picture")) {
+                if (pictureUri==null) {
+                    progressBar1.setVisibility(View.INVISIBLE);
+                    iv_avatar_player6.setImageDrawable(null);
+                    tv_avatar_player6.setText("");
+                } else if (pictureUri.equals("no_picture")) {
                     activity.doNewPlayerHasJoined();
                     progressBar6.setVisibility(View.VISIBLE);
                 } else {
@@ -274,7 +271,11 @@ public class WaitingPlayersFragment extends Fragment {
                 }
                 break;
             case 7:
-                if (pictureUri.equals("no_picture")) {
+                if (pictureUri==null) {
+                    progressBar1.setVisibility(View.INVISIBLE);
+                    iv_avatar_player7.setImageDrawable(null);
+                    tv_avatar_player7.setText("");
+                } else if (pictureUri.equals("no_picture")) {
                     activity.doNewPlayerHasJoined();
                     progressBar7.setVisibility(View.VISIBLE);
                 } else {
@@ -285,7 +286,11 @@ public class WaitingPlayersFragment extends Fragment {
                 }
                 break;
             case 8:
-                if (pictureUri.equals("no_picture")) {
+                if (pictureUri==null) {
+                    progressBar1.setVisibility(View.INVISIBLE);
+                    iv_avatar_player8.setImageDrawable(null);
+                    tv_avatar_player8.setText("");
+                } else if (pictureUri.equals("no_picture")) {
                     activity.doNewPlayerHasJoined();
                     progressBar8.setVisibility(View.VISIBLE);
                 } else {
@@ -297,9 +302,6 @@ public class WaitingPlayersFragment extends Fragment {
                 break;
         }
     }
-
-
-
 
     // onAttach para apis mayores y menores de la 23 -----------------------------------------------
     @TargetApi(23)

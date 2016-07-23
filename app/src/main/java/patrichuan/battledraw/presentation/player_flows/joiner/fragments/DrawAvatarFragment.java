@@ -129,8 +129,6 @@ public class DrawAvatarFragment extends Fragment {
 
                         }
                     });
-        } else {
-
         }
     }
 

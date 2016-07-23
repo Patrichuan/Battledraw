@@ -22,7 +22,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 // TODO
 /*
-    - Leave Room
     - Delete room if creator leave:
         - change players inroom field
         - delete room

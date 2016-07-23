@@ -102,6 +102,8 @@ public class CreatorBaseActivity extends BaseActivity {
 
 
 
+
+
     public void doOMGthisAvatarSong () {
         mediaPlayer = MediaPlayer.create(this, R.raw.omg_this_avatar);
         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
