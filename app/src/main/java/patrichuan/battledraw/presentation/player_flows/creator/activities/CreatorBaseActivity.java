@@ -22,6 +22,7 @@ import patrichuan.battledraw.util.Constants;
 
 public class CreatorBaseActivity extends BaseActivity {
 
+    private static final int MAX_NUM_PLAYERS = 7;
     private MediaPlayer mediaPlayer;
     private Map<String, String> players = new HashMap<>();
 
@@ -78,14 +79,28 @@ public class CreatorBaseActivity extends BaseActivity {
 
 
     public void addJoiner (String uid) {
-        joiners.add(uid);
+        boolean emptySlot = false;
+        if ((!joiners.contains(uid))&&(joiners.size()<MAX_NUM_PLAYERS)) {
+            for (int i=0; i<joiners.size(); i++) {
+                if (joiners.get(i).equals("empty")) {
+                    joiners.set(i, uid);
+                    emptySlot = true;
+                    break;
+                }
+            }
+            if (!emptySlot) {
+                joiners.add(uid);
+            }
+        }
     }
 
     public void removeJoiner (String uid) {
-        for (int i=0; i<joiners.size(); i++) {
-            if (joiners.get(i).equals(uid)) {
-                joiners.remove(i);
-                break;
+        if (joiners.contains(uid)) {
+            for (int i=0; i<joiners.size(); i++) {
+                if (joiners.get(i).equals(uid)) {
+                    joiners.set(i, "empty");
+                    break;
+                }
             }
         }
     }

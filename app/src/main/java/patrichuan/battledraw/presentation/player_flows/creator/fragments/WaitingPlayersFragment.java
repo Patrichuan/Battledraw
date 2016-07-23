@@ -41,8 +41,6 @@ public class WaitingPlayersFragment extends Fragment {
     private TextView tv_avatar_player1, tv_avatar_player2, tv_avatar_player3, tv_avatar_player4,
             tv_avatar_player5, tv_avatar_player6, tv_avatar_player7, tv_avatar_player8;
 
-    private ValueEventListener avatarListener;
-    private ChildEventListener playerListener;
 
     public WaitingPlayersFragment() {
 
@@ -60,8 +58,17 @@ public class WaitingPlayersFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_waiting_players, container, false);
         instanceViews(rootView);
-        instanceListeners();
         return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        String roomName = getArguments().getString(Constants.ARG_ROOM);
+        if (roomName!=null) {
+            tv_roomname.setText(roomName);
+            activity.getDatabaseReference().child("rooms").child(roomName).child("players").addChildEventListener(getPlayerListener());
+        }
     }
 
     private void instanceViews(View rootView) {
@@ -97,23 +104,8 @@ public class WaitingPlayersFragment extends Fragment {
         tv_avatar_player8 = (TextView) rootView.findViewById(R.id.tv_avatar_player8);
     }
 
-    private void instanceListeners () {
-        avatarListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot!=null) {
-                    String pictureUri = dataSnapshot.getValue().toString();
-                    setAvatar(activity.getNumJoiners(), pictureUri);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-
-        playerListener = new ChildEventListener() {
+    private ChildEventListener getPlayerListener () {
+        return new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 final String playerValue = dataSnapshot.getValue().toString();
@@ -123,7 +115,7 @@ public class WaitingPlayersFragment extends Fragment {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             activity.addJoiner(playerKey);
-                            activity.getDatabaseReference().child("players").child(playerKey).child("picture").addValueEventListener(avatarListener);
+                            activity.getDatabaseReference().child("players").child(playerKey).child("picture").addValueEventListener(getAvatarListener(playerKey));
                         }
 
                         @Override
@@ -144,7 +136,6 @@ public class WaitingPlayersFragment extends Fragment {
                 final String playerValue = dataSnapshot.getValue().toString();
                 final String playerKey = dataSnapshot.getKey();
                 if (playerValue.equals(Constants.PLAYER_TYPE_JOINER)) {
-                    activity.getDatabaseReference().child("players").child(playerKey).child("picture").removeEventListener(avatarListener);
                     activity.getDatabaseReference().child("players").child(playerKey).removeValue(new DatabaseReference.CompletionListener() {
                         @Override
                         public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
@@ -167,14 +158,25 @@ public class WaitingPlayersFragment extends Fragment {
         };
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        String roomName = getArguments().getString(Constants.ARG_ROOM);
-        if (roomName!=null) {
-            tv_roomname.setText(roomName);
-            activity.getDatabaseReference().child("rooms").child(roomName).child("players").addChildEventListener(playerListener);
-        }
+    private ValueEventListener getAvatarListener (final String playerKey) {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot!=null) {
+                    if (dataSnapshot.getValue()!=null) {
+                        String pictureUri = dataSnapshot.getValue().toString();
+                        setAvatar(activity.getJoinerPos(playerKey), pictureUri);
+                    } else {
+                        activity.getDatabaseReference().child("players").child(playerKey).child("picture").removeEventListener(this);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
     }
 
     private void setAvatar(final int numPlayer, String pictureUri) {
@@ -302,6 +304,19 @@ public class WaitingPlayersFragment extends Fragment {
                 break;
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // onAttach para apis mayores y menores de la 23 -----------------------------------------------
     @TargetApi(23)
